@@ -1,4 +1,3 @@
-```markdown
 # BMP Obfuscator
 
 A free online tool to hide text inside a data-efficient **1-bit monochrome BMP image**, using a simple, reversible **bitwise NOT operation**.
@@ -102,4 +101,3 @@ Made with 💙 by [Raoni Gabriel](https://github.com/raonigabriel)
 ## 📜 License
 
 [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-```
