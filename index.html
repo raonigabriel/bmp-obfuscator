@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMP Text Obfuscator</title>
+
+    <!-- SEO and Metadata Tags -->
+    <meta name="author" content="Raoni Gabriel">
+    <meta name="description" content="A free online tool to hide text inside a data-efficient 1-bit monochrome BMP image. Uses a simple bitwise NOT operation to obfuscate data. Created by Raoni Gabriel.">
+    <meta name="keywords" content="steganography, obfuscation, hide text in image, BMP, JavaScript tool, 1-bit, monochrome, bitwise, online tool, Raoni Gabriel">
+    
+    <!-- Open Graph tags for social media sharing (Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="BMP Data Obfuscator">
+    <meta property="og:description" content="A free online tool to hide text inside a data-efficient 1-bit monochrome BMP image using a simple bitwise NOT operation.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://raonigabriel.github.io/bmp-obfuscator/"> 
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="BMP Data Obfuscator">
+    <meta name="twitter:description" content="A free online tool to hide text inside a data-efficient 1-bit monochrome BMP image using a simple bitwise NOT operation.">
+
+    <!-- Instructs search engines to index this page -->
+    <meta name="robots" content="index, follow">
+    <!-- Sets the canonical (preferred) URL for this page -->
+    <link rel="canonical" href="https://raonigabriel.github.io/bmp-obfuscator/">
+
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            flex-direction: column; /* Allow footer to sit below the container */
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        h1, h2 {
+            border-bottom: 2px solid #e4e6eb;
+            padding-bottom: 10px;
+            margin-top: 0;
+            color: #1877f2;
+        }
+        section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #dddfe2;
+            font-size: 16px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 10px;
+        }
+        button:hover:not(:disabled) {
+            background-color: #166fe5;
+        }
+        button:disabled {
+            background-color: #a0bdf1;
+            cursor: not-allowed;
+        }
+        .output-area, .result-area {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f7f8fa;
+            border: 1px solid #e4e6eb;
+            border-radius: 6px;
+            min-height: 50px;
+        }
+        #output-image {
+            max-width: 100%;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        #deobfuscated-text-result {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: "Courier New", Courier, monospace;
+        }
+        #download-link {
+            text-decoration: none;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #65676b;
+        }
+        footer a {
+            color: #1877f2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BMP Data Obfuscator</h1>
+    <p>Hides text inside a data-efficient <b>1-bit per pixel</b> monochrome image using a simple <b>Bitwise NOT (~)</b> on every 8-byte chunk.</p>
+    <section>
+        <h2>1. Obfuscate Text to Image</h2>
+        <textarea id="text-to-obfuscate" rows="5" placeholder="Type your secret message here..."></textarea>
+        <button id="obfuscate-btn" disabled>Obfuscate & Generate Image</button>
+        <div class="output-area">
+            <p>Generated Image:</p>
+            <img id="output-image" alt="Obfuscated image will appear here">
+            <br>
+            <a id="download-link" style="display: none;">
+                <button>Download Image</button>
+            </a>
+        </div>
+    </section>
+
+    <section>
+        <h2>2. Deobfuscate Image to Text</h2>
+        <input type="file" id="file-input" accept="image/bmp">
+        <button id="deobfuscate-btn">Deobfuscate Image File</button>
+        <div class="result-area">
+            <p>Deobfuscated Message:</p>
+            <div id="deobfuscated-text-result"></div>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <p>Created by <a href="https://github.com/raonigabriel" target="_blank" rel="noopener noreferrer">Raoni Gabriel</a>.
+       Connect with me on <a href="https://www.linkedin.com/in/raonigabriel/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.
+    </p>
+</footer>
+
+<script>
+    // --- Configuration Constants ---
+    const HEADER_SIZE = 54;
+    const COLOR_TABLE_SIZE = 8;
+    const PIXEL_DATA_OFFSET = HEADER_SIZE + COLOR_TABLE_SIZE;
+
+    // --- Element Caching ---
+    const textInput = document.getElementById('text-to-obfuscate');
+    const obfuscateBtn = document.getElementById('obfuscate-btn');
+    const outputImage = document.getElementById('output-image');
+    const downloadLink = document.getElementById('download-link');
+    const fileInput = document.getElementById('file-input');
+    const deobfuscateBtn = document.getElementById('deobfuscate-btn');
+    const resultElement = document.getElementById('deobfuscated-text-result');
+
+    // --- UI Event Listener ---
+    textInput.addEventListener('input', () => {
+        obfuscateBtn.disabled = textInput.value.trim() === '';
+        downloadLink.style.display = 'none';
+    });
+    
+    // --- The Core Obfuscation/Deobfuscation Function ---
+    function transformData(dataBlock) {
+        const dataView = new DataView(dataBlock.buffer, dataBlock.byteOffset, dataBlock.byteLength);
+        const length = dataBlock.length;
+        for (let i = 0; i < length; i += 8) {
+            const originalBigInt = dataView.getBigInt64(i, true);
+            const transformedBigInt = ~originalBigInt;
+            dataView.setBigInt64(i, transformedBigInt, true);
+        }
+    }
+
+    // --- Obfuscation Logic ---
+    obfuscateBtn.addEventListener('click', () => {
+        obfuscateBtn.disabled = true;
+        deobfuscateBtn.disabled = true;
+
+        setTimeout(() => {
+            try {
+                const text = textInput.value;
+                if (!text) return;
+
+                const textBytes = new TextEncoder().encode(text);
+                const totalBitsNeeded = textBytes.length * 8;
+                const minWidth = Math.ceil(Math.sqrt(totalBitsNeeded));
+                let width = Math.ceil(minWidth / 32) * 32;
+                if (width === 0) width = 32;
+                const height = width;
+                const dataSize = (width * height) / 8;
+
+                const plainTextBlock = new Uint8Array(dataSize);
+                plainTextBlock.set(textBytes);
+
+                transformData(plainTextBlock);
+                const obfuscatedDataBlock = plainTextBlock;
+
+                const fileSize = PIXEL_DATA_OFFSET + dataSize;
+                const fileBuffer = new ArrayBuffer(fileSize);
+                const fileView = new DataView(fileBuffer);
+                
+                fileView.setUint8(0, 0x42); fileView.setUint8(1, 0x4D);
+                fileView.setUint32(2, fileSize, true);
+                fileView.setUint32(10, PIXEL_DATA_OFFSET, true);
+                fileView.setUint32(14, 40, true);
+                fileView.setInt32(18, width, true); fileView.setInt32(22, height, true);
+                fileView.setUint16(26, 1, true); fileView.setUint16(28, 1, true);
+                fileView.setUint32(30, 0, true); fileView.setUint32(34, dataSize, true);
+                fileView.setUint32(46, 2, true); fileView.setUint32(50, 2, true);
+                fileView.setUint32(HEADER_SIZE, 0x00000000, false);
+                fileView.setUint32(HEADER_SIZE + 4, 0xFFFFFF00, false);
+                
+                const finalFileBytes = new Uint8Array(fileBuffer);
+                finalFileBytes.set(obfuscatedDataBlock, PIXEL_DATA_OFFSET);
+                
+                const blob = new Blob([finalFileBytes], { type: 'image/bmp' });
+                const imageUrl = URL.createObjectURL(blob);
+                outputImage.src = imageUrl;
+                
+                downloadLink.href = imageUrl;
+                downloadLink.download = 'obfuscated_image.bmp';
+                downloadLink.style.display = 'inline-block';
+            } finally {
+                obfuscateBtn.disabled = textInput.value.trim() === '';
+                deobfuscateBtn.disabled = false;
+            }
+        }, 0);
+    });
+
+    // --- Deobfuscation Logic ---
+    deobfuscateBtn.addEventListener('click', () => {
+        if (fileInput.files.length === 0) {
+            alert("Please select a BMP file to deobfuscate.");
+            return;
+        }
+        obfuscateBtn.disabled = true;
+        deobfuscateBtn.disabled = true;
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
+                const arrayBuffer = e.target.result;
+                if (arrayBuffer.byteLength < PIXEL_DATA_OFFSET) throw new Error("File is too small.");
+                const headerView = new DataView(arrayBuffer, 0, HEADER_SIZE);
+
+                if (headerView.getUint8(0) !== 0x42 || headerView.getUint8(1) !== 0x4D) {
+                    throw new Error("Invalid BMP signature.");
+                }
+                if (headerView.getUint16(28, true) !== 1) {
+                    throw new Error("Not a 1-bpp BMP file.");
+                }
+
+                const dataBlock = new Uint8Array(arrayBuffer, PIXEL_DATA_OFFSET);
+                transformData(dataBlock);
+                const deobfuscatedBytes = dataBlock;
+
+                const paddedString = new TextDecoder("utf-8", { fatal: true }).decode(deobfuscatedBytes);
+                resultElement.textContent = paddedString.trimEnd();
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+            } finally {
+                obfuscateBtn.disabled = textInput.value.trim() === '';
+                deobfuscateBtn.disabled = false;
+            }
+        };
+        
+        reader.onerror = () => {
+            resultElement.textContent = "Error reading file.";
+            obfuscateBtn.disabled = textInput.value.trim() === '';
+            deobfuscateBtn.disabled = false;
+        };
+        
+        reader.readAsArrayBuffer(file);
+    });
+</script>
+
+</body>
+</html>
